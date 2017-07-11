@@ -138,13 +138,17 @@ class AirCargoProblem(Problem):
         kb = PropKB()
         kb.tell(decode_state(state, self.state_map).pos_sentence())
         for action in self.actions_list:
+            is_possible = True
             for clause in action.precond_pos:
                 if clause not in kb.clauses:
-                    continue
+                    is_possible = False
+                    break
             for clause in action.precond_neg:
                 if clause in kb.clauses:
-                    continue
-            possible_actions.append(action)
+                    is_possible = False
+                    break
+            if is_possible:
+                possible_actions.append(action)
         return possible_actions
 
     def result(self, state: str, action: Action):
@@ -212,6 +216,16 @@ class AirCargoProblem(Problem):
         """
         # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
         count = 0
+        state = node.state
+
+        fluentState = decode_state(state, self.state_map)
+        pos = fluentState.pos_sentence()
+        kb = PropKB()
+        kb.tell(pos)
+        for goal in self.goal:
+            if goal not in kb.clauses: # unsatisfy goal
+                count += 1
+
         return count
 
 
