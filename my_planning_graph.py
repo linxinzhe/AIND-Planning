@@ -314,7 +314,7 @@ class PlanningGraph():
         a_level = set()
         for action in self.all_actions:
             pgNode_a = PgNode_a(action)
-            s_nodes = pgNode_a.precond_s_nodes()
+            s_nodes = pgNode_a.prenodes
             for node in s_nodes:
                 if node not in s_level:
                     break
@@ -343,13 +343,13 @@ class PlanningGraph():
         #   may be "added" to the set without fear of duplication.  However, it is important to then correctly create and connect
         #   all of the new S nodes as children of all the A nodes that could produce them, and likewise add the A nodes to the
         #   parent sets of the S nodes
-        a_level = self.a_levels[level-1]
+        a_level = self.a_levels[level - 1]
         s_level = set()
         for pgNode_a in a_level:
-            effect_s_nodes = pgNode_a.effect_s_nodes()
+            effect_s_nodes = pgNode_a.effnodes
             for node in effect_s_nodes:
                 if node in s_level:
-                    for in_node in s_level:
+                    for in_node in s_level:  # update exist node parents to action
                         if in_node == node:
                             in_node.parents.add(pgNode_a)
                 else:
@@ -415,6 +415,23 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for Inconsistent Effects between nodes
+        a1_action = node_a1.action
+        a1_effect_adds = a1_action.effect_add
+        a1_effect_rems = a1_action.effect_rem
+        a2_action = node_a2.action
+        a2_effect_adds = a2_action.effect_add
+        a2_effect_rems = a2_action.effect_rem
+
+        for a1_add in a1_effect_adds:
+            for a2_rem in a2_effect_rems:
+                if a1_add == a2_rem:
+                    return True
+
+        for a2_add in a2_effect_adds:
+            for a1_rem in a1_effect_rems:
+                if a2_add == a1_rem:
+                    return True
+
         return False
 
     def interference_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:
