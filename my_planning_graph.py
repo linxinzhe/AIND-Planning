@@ -457,13 +457,13 @@ class PlanningGraph():
         a2_effect_rems = a2_action.effect_rem
 
         for a1_pos in a1_precond_pos:
-            for a2_rem in a2_effect_rems:
-                if a1_pos == a2_rem:
+            for a2_neg in a2_effect_rems:
+                if a1_pos == a2_neg:
                     return True
 
-        for a2_add in a2_effect_adds:
+        for a2_pos in a2_effect_adds:
             for a1_neg in a1_precond_neg:
-                if a2_add == a1_neg:
+                if a2_pos == a1_neg:
                     return True
 
         # vice-versa
@@ -476,13 +476,13 @@ class PlanningGraph():
         a1_effect_rems = a1_action.effect_rem
 
         for a2_pos in a2_precond_pos:
-            for a1_rem in a1_effect_rems:
-                if a2_pos == a1_rem:
+            for a1_neg in a1_effect_rems:
+                if a2_pos == a1_neg:
                     return True
 
-        for a1_add in a1_effect_adds:
+        for a1_pos in a1_effect_adds:
             for a2_neg in a2_precond_neg:
-                if a1_add == a2_neg:
+                if a1_pos == a2_neg:
                     return True
 
         return False
@@ -499,6 +499,14 @@ class PlanningGraph():
         """
 
         # TODO test for Competing Needs between nodes
+        a1_precondition = node_a1.parents
+        a2_precondition = node_a2.parents
+
+        for a1_pre in a1_precondition:
+            for a2_pre in a2_precondition:
+                if a1_pre.is_mutex(a2_pre):
+                    return True
+
         return False
 
     def update_s_mutex(self, nodeset: set):
