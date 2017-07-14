@@ -568,7 +568,7 @@ class PlanningGraph():
 
         for a1_action in a1_actions:
             for a2_action in a2_actions:
-                if not a1_action.is_mutex(a2_action): # if one is not mutex then False
+                if not a1_action.is_mutex(a2_action):  # if one is not mutex then False
                     return False
 
         return True
@@ -581,4 +581,14 @@ class PlanningGraph():
         level_sum = 0
         # TODO implement
         # for each goal in the problem, determine the level cost, then add them together
+        for goal in self.problem.goal:
+            found_goal = False
+            for i, level in enumerate(self.s_levels):
+                for node in level:
+                    if goal == node.symbol:
+                        level_sum += i
+                        found_goal = True
+                        break
+                if found_goal:
+                    break
         return level_sum
