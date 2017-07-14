@@ -585,7 +585,7 @@ class PlanningGraph():
             found_goal = False
             for i, level in enumerate(self.s_levels):
                 for node in level:
-                    if goal == node.symbol:
+                    if node.is_pos and goal == node.symbol:
                         level_sum += i
                         found_goal = True
                         break
